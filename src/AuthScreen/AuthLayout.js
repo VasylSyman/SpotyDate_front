@@ -32,6 +32,7 @@ export const Form = styled.form`
 `;
 
 export const Input = styled.input`
+    box-sizing: border-box;
   width: 100%;
   padding: 0.75rem;
   background-color: #374151;
@@ -51,6 +52,7 @@ export const Input = styled.input`
 `;
 
 export const Button = styled.button`
+    box-sizing: border-box;
   width: 100%;
   padding: 0.75rem;
   background-color: #10b981;

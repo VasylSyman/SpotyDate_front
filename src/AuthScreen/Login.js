@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { AuthContainer, AuthCard, AuthTitle, Form, Input, Button, SwitchText } from './AuthLayout';
+import { Link } from 'react-router-dom';
 
 const Login = ({ onSwitchToRegister }) => {
     const [formData, setFormData] = useState({
@@ -58,7 +59,7 @@ const Login = ({ onSwitchToRegister }) => {
                 </Form>
                 <SwitchText>
                     Don't have an account?
-                    <a href="#" onClick={onSwitchToRegister}>Sign Up</a>
+                    <Link to="/register" onClick={onSwitchToRegister}>Sign Up</Link>
                 </SwitchText>
             </AuthCard>
         </AuthContainer>

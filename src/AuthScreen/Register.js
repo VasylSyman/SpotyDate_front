@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { AuthContainer, AuthCard, AuthTitle, Form, Input, Button, SwitchText } from './AuthLayout';
+import { Link } from 'react-router-dom';
+import {useNavigate} from 'react-router-dom';
 
 const Register = ({ onSwitchToLogin }) => {
+    const navigate = useNavigate();
+
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -47,6 +51,8 @@ const Register = ({ onSwitchToLogin }) => {
         } finally {
             setLoading(false);
         }
+
+        navigate('/register/profile');
     };
 
     return (
@@ -83,13 +89,16 @@ const Register = ({ onSwitchToLogin }) => {
                             {error}
                         </p>
                     )}
-                    <Button type="submit" disabled={loading}>
-                        {loading ? 'Creating account...' : 'Create Account'}
+                    {/*<Button type="submit" disabled={loading}>*/}
+                    {/*    {loading ? 'Creating account...' : 'Create Account'}*/}
+                    {/*</Button>*/}
+                    <Button onSubmit={handleSubmit}>
+                        Next
                     </Button>
                 </Form>
                 <SwitchText>
                     Already have an account?
-                    <a href="#" onClick={onSwitchToLogin}>Sign In</a>
+                    <Link to="/login" onClick={onSwitchToLogin}>Sign In</Link>
                 </SwitchText>
             </AuthCard>
         </AuthContainer>
