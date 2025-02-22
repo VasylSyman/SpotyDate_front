@@ -4,25 +4,34 @@ import Login from "./AuthScreen/Login";
 import Register from "./AuthScreen/Register";
 import ProfileForm from "./AuthScreen/ProfileForm";
 import AuthCheck from "./AuthScreen/AuthCheck";
+import Profile from "./ProfileScreen/Profile";
 
 export const router = createBrowserRouter([
     {
         path: "/",
         element: <>
-            <AuthCheck />
-            <MainScreen />
+            <AuthCheck/>
+            <MainScreen/>
         </>
     },
     {
         path: "/login",
-        element: <Login />
+        element: <Login/>
     },
     {
         path: "/register",
-        element: <Register />
+        element: <Register/>
     },
     {
         path: '/register/profile',
-        element: <ProfileForm />
+        element: <ProfileForm/>
+    },
+    {
+        path: "/profile",
+        element: <Profile/>
+    },
+    {
+        path: "/profile/edit",
+        element: <Profile/>
     }
 ])
