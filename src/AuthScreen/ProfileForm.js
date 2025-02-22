@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {AuthTitle, AuthCard, Form, Input, Button, AuthContainer} from './AuthLayout';
 import styled from 'styled-components';
 
@@ -12,7 +13,11 @@ const ErrorText = styled.p`
   margin-top: -0.5rem;
 `;
 
-const ProfileForm = ({ onComplete }) => {
+const ProfileForm = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
+    const { email, password } = location.state || {};
+
     const [formData, setFormData] = useState({
         name: '',
         surname: '',
@@ -34,8 +39,34 @@ const ProfileForm = ({ onComplete }) => {
         e.preventDefault();
         setLoading(true);
 
-        setError('Failed to complete profile. Please try again.');
-        setLoading(false);
+        try {
+            const response = await fetch('http://0.0.0.0:8000/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email,
+                    password,
+                    name: formData.name,
+                    surname: formData.surname,
+                    date_of_birth: formData.birthdate,
+                }),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.detail || 'Registration failed.');
+            }
+
+            localStorage.setItem("access_token", data.access_token);
+
+            navigate('/');
+        } catch (error) {
+            console.error('Profile completion error:', error);
+            setError(error.message);
+        } finally {
+            setLoading(false);
+        }
     };
 
     return (

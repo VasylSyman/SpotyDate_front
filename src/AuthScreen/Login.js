@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { AuthContainer, AuthCard, AuthTitle, Form, Input, Button, SwitchText } from './AuthLayout';
-import { Link } from 'react-router-dom';
+import {Link, useNavigate} from 'react-router-dom';
 
 const Login = ({ onSwitchToRegister }) => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: '',
         password: ''
@@ -22,11 +23,27 @@ const Login = ({ onSwitchToRegister }) => {
         setLoading(true);
 
         try {
-            // Add your login logic here
-            console.log('Logging in with:', formData);
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
+            const response = await fetch("http://0.0.0.0:8000/login", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.detail || "Login failed");
+            }
+
+            localStorage.setItem("access_token", data.access_token);
+
+            console.log("Login successful:", data);
+
+            navigate('/');
         } catch (error) {
-            console.error('Login error:', error);
+            console.error("Login error:", error.message);
         } finally {
             setLoading(false);
         }

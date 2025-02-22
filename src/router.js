@@ -3,11 +3,15 @@ import MainScreen from "./MainScreen/MainScreen";
 import Login from "./AuthScreen/Login";
 import Register from "./AuthScreen/Register";
 import ProfileForm from "./AuthScreen/ProfileForm";
+import AuthCheck from "./AuthScreen/AuthCheck";
 
 export const router = createBrowserRouter([
     {
         path: "/",
-        element: <MainScreen />
+        element: <>
+            <AuthCheck />
+            <MainScreen />
+        </>
     },
     {
         path: "/login",

@@ -35,6 +35,21 @@ const Register = ({ onSwitchToLogin }) => {
         return true;
     };
 
+    const checkEmailUnique = async (email) => {
+        try {
+            const response = await fetch('http://0.0.0.0:8000/unique_email', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email }),
+            });
+            const data = await response.json();
+            return data;
+        } catch (err) {
+            console.error('Email check error:', err);
+            return false;
+        }
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -42,17 +57,20 @@ const Register = ({ onSwitchToLogin }) => {
 
         setLoading(true);
         try {
-            // Add your registration logic here
-            console.log('Registering with:', formData);
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Simulated API call
+            const isUnique = await checkEmailUnique(formData.email);
+            if (!isUnique) {
+                setError('Email is already in use.');
+                setLoading(false);
+                return;
+            }
+
+            navigate('/register/profile', { state: { email: formData.email, password: formData.password } });
         } catch (error) {
             console.error('Registration error:', error);
-            setError('Registration failed. Please try again.');
+            setError('An error occurred. Please try again.');
         } finally {
             setLoading(false);
         }
-
-        navigate('/register/profile');
     };
 
     return (
