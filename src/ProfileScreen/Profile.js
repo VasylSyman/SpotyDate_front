@@ -20,38 +20,74 @@ import {
     LogoutButton
 } from './ProfileLayout';
 
+const profileService = {
+    fetchProfile: async (token) => {
+        const response = await fetch('http://0.0.0.0:8000/user/me', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch profile');
+        }
+        return response.json();
+    },
+
+    updateProfile: async (token, formData) => {
+        const response = await fetch('http://0.0.0.0:8000/update_user/me', {
+            method: 'POST',
+            headers: {
+                'Authorization': `Bearer ${token}`
+            },
+            body: formData
+        });
+        if (!response.ok) {
+            const errorData = await response.json();
+            throw new Error(errorData.detail || 'Failed to update profile');
+        }
+        return response.json();
+    }
+};
+
+const initialProfileState = {
+    first_name: '',
+    last_name: '',
+    birth_date: '',
+    gender: '',
+    bio: '',
+    location: '',
+    profile_picture_url: null
+};
+
 const Profile = () => {
     const navigate = useNavigate();
     const location = useLocation();
     const isEditMode = location.pathname === '/profile/edit';
+    const token = localStorage.getItem('access_token');
 
-    const [profile, setProfile] = useState({
-        first_name: '',
-        last_name: '',
-        birth_date: '',
-        gender: '',
-        bio: '',
-        location: '',
-        profile_picture_url: null
-    });
+    const [profile, setProfile] = useState(initialProfileState);
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
+    const [error, setError] = useState(null);
     const [imagePreview, setImagePreview] = useState(null);
     const [profilePicture, setProfilePicture] = useState(null);
 
+    useEffect(() => {
+        if (!token) {
+            navigate('/login');
+        }
+    }, [token, navigate]);
+
     const fetchProfileData = async () => {
         try {
-            const response = await fetch('http://0.0.0.0:8000/user/me', {
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-                }
-            });
-            const data = await response.json();
+            setError(null);
+            const data = await profileService.fetchProfile(token);
             setProfile(data);
             if (data.profile_picture_url) {
                 setImagePreview(data.profile_picture_url);
             }
         } catch (error) {
+            setError('Failed to load profile data');
             console.error('Error fetching profile:', error);
         } finally {
             setLoading(false);
@@ -60,72 +96,63 @@ const Profile = () => {
 
     useEffect(() => {
         fetchProfileData();
-    }, []);
-
-    // Add new useEffect to handle path changes
-    useEffect(() => {
-        if (!isEditMode) {
-            fetchProfileData();
-        }
     }, [isEditMode]);
 
     const handleImageUpload = (e) => {
         if (!isEditMode) return;
+
         const file = e.target.files[0];
-        if (file) {
-            setProfilePicture(file);
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                setImagePreview(reader.result);
-            };
-            reader.readAsDataURL(file);
+        if (!file) return;
+
+        const validTypes = ['image/jpeg', 'image/png', 'image/gif'];
+        if (!validTypes.includes(file.type)) {
+            setError('Please upload a valid image file (JPEG, PNG, or GIF)');
+            return;
         }
+
+        if (file.size > 5 * 1024 * 1024) { // 5MB limit
+            setError('Image size should be less than 5MB');
+            return;
+        }
+
+        setProfilePicture(file);
+        const reader = new FileReader();
+        reader.onloadend = () => setImagePreview(reader.result);
+        reader.readAsDataURL(file);
+    };
+
+    const handleInputChange = (field, value) => {
+        setProfile(prev => ({
+            ...prev,
+            [field]: value
+        }));
     };
 
     const handleSave = async () => {
-        setSaving(true);
-
         try {
+            setSaving(true);
+            setError(null);
+
             const formData = new FormData();
 
-            // Only append values that are not null or undefined
-            if (profile.first_name) formData.append('first_name', profile.first_name);
-            if (profile.last_name) formData.append('last_name', profile.last_name);
-            if (profile.birth_date) formData.append('birth_date', profile.birth_date);
-            if (profile.gender) formData.append('gender', profile.gender);
-            if (profile.bio) formData.append('bio', profile.bio);
-            if (profile.location) formData.append('location', profile.location);
-            if (profilePicture) formData.append('file', profilePicture);
-
-            const response = await fetch('http://0.0.0.0:8000/update_user/me', {
-                method: 'POST',
-                headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
-                },
-                body: formData
+            Object.entries(profile).forEach(([key, value]) => {
+                if (value !== initialProfileState[key] && value !== null) {
+                    formData.append(key, value);
+                }
             });
 
-            if (!response.ok) {
-                const errorData = await response.json();
-                throw new Error(errorData.detail || 'Failed to update profile');
+            if (profilePicture) {
+                formData.append('file', profilePicture);
             }
 
-            // Navigate to profile view mode
+            await profileService.updateProfile(token, formData);
             navigate('/profile');
-
-            // Reset the profile picture state
             setProfilePicture(null);
-
         } catch (error) {
-            console.error('Error updating profile:', error);
-            // You might want to show an error message to the user here
+            setError(error.message);
         } finally {
             setSaving(false);
         }
-    };
-
-    const handleEdit = () => {
-        navigate('/profile/edit');
     };
 
     const handleLogout = () => {
@@ -140,11 +167,11 @@ const Profile = () => {
     return (
         <Container>
             <ProfileCard>
-                <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                <div className="flex justify-between items-center">
                     <Title>Profile Settings</Title>
                     <ButtonContainer>
                         {!isEditMode && (
-                            <EditButton onClick={handleEdit}>
+                            <EditButton onClick={() => navigate('/profile/edit')}>
                                 Edit Profile
                             </EditButton>
                         )}
@@ -159,7 +186,11 @@ const Profile = () => {
                     <ImageUploadSection>
                         <ImagePreview>
                             {imagePreview ? (
-                                <img src={imagePreview} alt="Profile"/>
+                                <img
+                                    src={imagePreview}
+                                    alt="Profile"
+                                    className="w-full h-full object-cover rounded-full"
+                                />
                             ) : (
                                 <User size={40}/>
                             )}
@@ -171,7 +202,7 @@ const Profile = () => {
                                 <input
                                     type="file"
                                     hidden
-                                    accept="image/*"
+                                    accept="image/jpeg,image/png,image/gif"
                                     onChange={handleImageUpload}
                                 />
                             </UploadButton>
@@ -186,25 +217,25 @@ const Profile = () => {
                             type="text"
                             placeholder="First Name"
                             value={profile.first_name || ''}
-                            onChange={e => setProfile(prev => ({...prev, first_name: e.target.value}))}
+                            onChange={e => handleInputChange('first_name', e.target.value)}
                             disabled={!isEditMode}
                         />
                         <Input
                             type="text"
                             placeholder="Last Name"
                             value={profile.last_name || ''}
-                            onChange={e => setProfile(prev => ({...prev, last_name: e.target.value}))}
+                            onChange={e => handleInputChange('last_name', e.target.value)}
                             disabled={!isEditMode}
                         />
                         <Input
                             type="date"
                             value={profile.birth_date || ''}
-                            onChange={e => setProfile(prev => ({...prev, birth_date: e.target.value}))}
+                            onChange={e => handleInputChange('birth_date', e.target.value)}
                             disabled={!isEditMode}
                         />
                         <Select
                             value={profile.gender || ''}
-                            onChange={e => setProfile(prev => ({...prev, gender: e.target.value}))}
+                            onChange={e => handleInputChange('gender', e.target.value)}
                             disabled={!isEditMode}
                         >
                             <option value="">Select Gender</option>
@@ -221,27 +252,34 @@ const Profile = () => {
                     <TextArea
                         placeholder="Tell us about yourself..."
                         value={profile.bio || ''}
-                        onChange={e => setProfile(prev => ({...prev, bio: e.target.value}))}
+                        onChange={e => handleInputChange('bio', e.target.value)}
                         disabled={!isEditMode}
                     />
                 </Section>
 
                 <Section>
-                    <SectionTitle><MapPin size={16}/> Location</SectionTitle>
+                    <SectionTitle>
+                        <MapPin size={16} className="inline mr-2"/>
+                        Location
+                    </SectionTitle>
                     <Grid>
                         <Input
                             type="text"
                             placeholder="Enter your location"
                             value={profile.location || ''}
-                            onChange={e => setProfile(prev => ({...prev, location: e.target.value}))}
+                            onChange={e => handleInputChange('location', e.target.value)}
                             disabled={!isEditMode}
-                            style={{gridColumn: '1 / -1'}}
+                            className="col-span-full"
                         />
                     </Grid>
                 </Section>
 
                 {isEditMode && (
-                    <ActionButton onClick={handleSave} disabled={saving}>
+                    <ActionButton
+                        onClick={handleSave}
+                        disabled={saving}
+                        className="mt-6"
+                    >
                         {saving ? 'Saving...' : 'Save Changes'}
                     </ActionButton>
                 )}
