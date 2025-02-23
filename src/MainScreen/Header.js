@@ -51,10 +51,13 @@ const Header = () => {
     const navigate = useNavigate();
 
     return (<HeaderContainer>
-        <Logo>
-            <LogoDot/>
-            <LogoText>MusicMatch</LogoText>
-        </Logo>
+        <IconWrapper onClick={() => navigate('/')}>
+            <Logo>
+                <LogoDot/>
+                <LogoText>MusicMatch</LogoText>
+            </Logo>
+        </IconWrapper>
+
         <NavIcons>
             <IconWrapper onClick={() => console.log('Bell clicked')}>
                 <Bell size={20}/>

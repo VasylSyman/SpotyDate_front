@@ -17,8 +17,9 @@ import {
     ActionButton,
     ButtonContainer,
     EditButton,
-    LogoutButton
+    LogoutButton, MainContent
 } from './ProfileLayout';
+import Header from "../MainScreen/Header";
 
 const profileService = {
     fetchProfile: async (token) => {
@@ -166,124 +167,127 @@ const Profile = () => {
 
     return (
         <Container>
-            <ProfileCard>
-                <div className="flex justify-between items-center">
-                    <Title>Profile Settings</Title>
-                    <ButtonContainer>
-                        {!isEditMode && (
-                            <EditButton onClick={() => navigate('/profile/edit')}>
-                                Edit Profile
-                            </EditButton>
-                        )}
-                        <LogoutButton onClick={handleLogout}>
-                            Log Out
-                        </LogoutButton>
-                    </ButtonContainer>
-                </div>
-
-                <Section>
-                    <SectionTitle>Profile Picture</SectionTitle>
-                    <ImageUploadSection>
-                        <ImagePreview>
-                            {imagePreview ? (
-                                <img
-                                    src={imagePreview}
-                                    alt="Profile"
-                                    className="w-full h-full object-cover rounded-full"
-                                />
-                            ) : (
-                                <User size={40}/>
+            <MainContent>
+                <Header/>
+                <ProfileCard>
+                    <div className="flex justify-between items-center">
+                        <Title>Profile Settings</Title>
+                        <ButtonContainer>
+                            {!isEditMode && (
+                                <EditButton onClick={() => navigate('/profile/edit')}>
+                                    Edit Profile
+                                </EditButton>
                             )}
-                        </ImagePreview>
-                        {isEditMode && (
-                            <UploadButton as="label">
-                                <Camera size={20}/>
-                                Upload Photo
-                                <input
-                                    type="file"
-                                    hidden
-                                    accept="image/jpeg,image/png,image/gif"
-                                    onChange={handleImageUpload}
-                                />
-                            </UploadButton>
-                        )}
-                    </ImageUploadSection>
-                </Section>
+                            <LogoutButton onClick={handleLogout}>
+                                Log Out
+                            </LogoutButton>
+                        </ButtonContainer>
+                    </div>
 
-                <Section>
-                    <SectionTitle>Basic Information</SectionTitle>
-                    <Grid>
-                        <Input
-                            type="text"
-                            placeholder="First Name"
-                            value={profile.first_name || ''}
-                            onChange={e => handleInputChange('first_name', e.target.value)}
+                    <Section>
+                        <SectionTitle>Profile Picture</SectionTitle>
+                        <ImageUploadSection>
+                            <ImagePreview>
+                                {imagePreview ? (
+                                    <img
+                                        src={imagePreview}
+                                        alt="Profile"
+                                        className="w-full h-full object-cover rounded-full"
+                                    />
+                                ) : (
+                                    <User size={40}/>
+                                )}
+                            </ImagePreview>
+                            {isEditMode && (
+                                <UploadButton as="label">
+                                    <Camera size={20}/>
+                                    Upload Photo
+                                    <input
+                                        type="file"
+                                        hidden
+                                        accept="image/jpeg,image/png,image/gif"
+                                        onChange={handleImageUpload}
+                                    />
+                                </UploadButton>
+                            )}
+                        </ImageUploadSection>
+                    </Section>
+
+                    <Section>
+                        <SectionTitle>Basic Information</SectionTitle>
+                        <Grid>
+                            <Input
+                                type="text"
+                                placeholder="First Name"
+                                value={profile.first_name || ''}
+                                onChange={e => handleInputChange('first_name', e.target.value)}
+                                disabled={!isEditMode}
+                            />
+                            <Input
+                                type="text"
+                                placeholder="Last Name"
+                                value={profile.last_name || ''}
+                                onChange={e => handleInputChange('last_name', e.target.value)}
+                                disabled={!isEditMode}
+                            />
+                            <Input
+                                type="date"
+                                value={profile.birth_date || ''}
+                                onChange={e => handleInputChange('birth_date', e.target.value)}
+                                disabled={!isEditMode}
+                            />
+                            <Select
+                                value={profile.gender || ''}
+                                onChange={e => handleInputChange('gender', e.target.value)}
+                                disabled={!isEditMode}
+                            >
+                                <option value="">Select Gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                                <option value="other">Other</option>
+                                <option value="prefer-not-to-say">Prefer not to say</option>
+                            </Select>
+                        </Grid>
+                    </Section>
+
+                    <Section>
+                        <SectionTitle>About You</SectionTitle>
+                        <TextArea
+                            placeholder="Tell us about yourself..."
+                            value={profile.bio || ''}
+                            onChange={e => handleInputChange('bio', e.target.value)}
                             disabled={!isEditMode}
                         />
-                        <Input
-                            type="text"
-                            placeholder="Last Name"
-                            value={profile.last_name || ''}
-                            onChange={e => handleInputChange('last_name', e.target.value)}
-                            disabled={!isEditMode}
-                        />
-                        <Input
-                            type="date"
-                            value={profile.birth_date || ''}
-                            onChange={e => handleInputChange('birth_date', e.target.value)}
-                            disabled={!isEditMode}
-                        />
-                        <Select
-                            value={profile.gender || ''}
-                            onChange={e => handleInputChange('gender', e.target.value)}
-                            disabled={!isEditMode}
+                    </Section>
+
+                    <Section>
+                        <SectionTitle>
+                            <MapPin size={16} className="inline mr-2"/>
+                            Location
+                        </SectionTitle>
+                        <Grid>
+                            <Input
+                                type="text"
+                                placeholder="Enter your location"
+                                value={profile.location || ''}
+                                onChange={e => handleInputChange('location', e.target.value)}
+                                disabled={!isEditMode}
+                                className="col-span-full"
+                            />
+                        </Grid>
+                    </Section>
+
+                    {isEditMode && (
+                        <ActionButton
+                            onClick={handleSave}
+                            disabled={saving}
+                            className="mt-6"
                         >
-                            <option value="">Select Gender</option>
-                            <option value="male">Male</option>
-                            <option value="female">Female</option>
-                            <option value="other">Other</option>
-                            <option value="prefer-not-to-say">Prefer not to say</option>
-                        </Select>
-                    </Grid>
-                </Section>
-
-                <Section>
-                    <SectionTitle>About You</SectionTitle>
-                    <TextArea
-                        placeholder="Tell us about yourself..."
-                        value={profile.bio || ''}
-                        onChange={e => handleInputChange('bio', e.target.value)}
-                        disabled={!isEditMode}
-                    />
-                </Section>
-
-                <Section>
-                    <SectionTitle>
-                        <MapPin size={16} className="inline mr-2"/>
-                        Location
-                    </SectionTitle>
-                    <Grid>
-                        <Input
-                            type="text"
-                            placeholder="Enter your location"
-                            value={profile.location || ''}
-                            onChange={e => handleInputChange('location', e.target.value)}
-                            disabled={!isEditMode}
-                            className="col-span-full"
-                        />
-                    </Grid>
-                </Section>
-
-                {isEditMode && (
-                    <ActionButton
-                        onClick={handleSave}
-                        disabled={saving}
-                        className="mt-6"
-                    >
-                        {saving ? 'Saving...' : 'Save Changes'}
-                    </ActionButton>
-                )}
-            </ProfileCard>
+                            {saving ? 'Saving...' : 'Save Changes'}
+                        </ActionButton>
+                    )}
+                </ProfileCard>
+            </MainContent>
         </Container>
     );
 };

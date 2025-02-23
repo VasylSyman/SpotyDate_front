@@ -8,6 +8,11 @@ export const Container = styled.div`
     padding: 2rem;
 `;
 
+export const MainContent = styled.div`
+    max-width: 1200px;
+    margin: 0 auto;
+`;
+
 export const ProfileCard = styled.div`
     max-width: 800px;
     margin: 0 auto;
