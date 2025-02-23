@@ -26,33 +26,30 @@ const Profile = () => {
     const isEditMode = location.pathname === '/profile/edit';
 
     const [profile, setProfile] = useState({
-        firstName: '',
-        lastName: '',
-        birthDate: '',
+        first_name: '',
+        last_name: '',
+        birth_date: '',
         gender: '',
         bio: '',
         location: '',
-        profilePicture: null
+        profile_picture_url: null
     });
     const [loading, setLoading] = useState(true);
     const [saving, setSaving] = useState(false);
     const [imagePreview, setImagePreview] = useState(null);
-
-    useEffect(() => {
-        fetchProfileData();
-    }, []);
+    const [profilePicture, setProfilePicture] = useState(null);
 
     const fetchProfileData = async () => {
         try {
-            const response = await fetch('YOUR_BACKEND_URL/profile', {
+            const response = await fetch('http://0.0.0.0:8000/user/me', {
                 headers: {
-                    'Authorization': `Bearer ${localStorage.getItem('token')}`
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
                 }
             });
             const data = await response.json();
             setProfile(data);
-            if (data.profilePicture) {
-                setImagePreview(data.profilePicture);
+            if (data.profile_picture_url) {
+                setImagePreview(data.profile_picture_url);
             }
         } catch (error) {
             console.error('Error fetching profile:', error);
@@ -61,14 +58,25 @@ const Profile = () => {
         }
     };
 
+    useEffect(() => {
+        fetchProfileData();
+    }, []);
+
+    // Add new useEffect to handle path changes
+    useEffect(() => {
+        if (!isEditMode) {
+            fetchProfileData();
+        }
+    }, [isEditMode]);
+
     const handleImageUpload = (e) => {
         if (!isEditMode) return;
         const file = e.target.files[0];
         if (file) {
+            setProfilePicture(file);
             const reader = new FileReader();
             reader.onloadend = () => {
                 setImagePreview(reader.result);
-                setProfile(prev => ({...prev, profilePicture: file}));
             };
             reader.readAsDataURL(file);
         }
@@ -76,14 +84,41 @@ const Profile = () => {
 
     const handleSave = async () => {
         setSaving(true);
+
         try {
-            // Simulated API call
-            await new Promise(resolve => setTimeout(resolve, 1000));
-            console.log('Saving profile:', profile);
-            // Here you would normally send the data to your backend
+            const formData = new FormData();
+
+            // Only append values that are not null or undefined
+            if (profile.first_name) formData.append('first_name', profile.first_name);
+            if (profile.last_name) formData.append('last_name', profile.last_name);
+            if (profile.birth_date) formData.append('birth_date', profile.birth_date);
+            if (profile.gender) formData.append('gender', profile.gender);
+            if (profile.bio) formData.append('bio', profile.bio);
+            if (profile.location) formData.append('location', profile.location);
+            if (profilePicture) formData.append('file', profilePicture);
+
+            const response = await fetch('http://0.0.0.0:8000/update_user/me', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('access_token')}`
+                },
+                body: formData
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                throw new Error(errorData.detail || 'Failed to update profile');
+            }
+
+            // Navigate to profile view mode
             navigate('/profile');
+
+            // Reset the profile picture state
+            setProfilePicture(null);
+
         } catch (error) {
-            console.error('Error saving profile:', error);
+            console.error('Error updating profile:', error);
+            // You might want to show an error message to the user here
         } finally {
             setSaving(false);
         }
@@ -94,7 +129,6 @@ const Profile = () => {
     };
 
     const handleLogout = () => {
-        console.log('Logging out...');
         localStorage.removeItem("access_token");
         navigate('/login');
     };
@@ -151,25 +185,25 @@ const Profile = () => {
                         <Input
                             type="text"
                             placeholder="First Name"
-                            value={profile.firstName}
-                            onChange={e => setProfile(prev => ({...prev, firstName: e.target.value}))}
+                            value={profile.first_name || ''}
+                            onChange={e => setProfile(prev => ({...prev, first_name: e.target.value}))}
                             disabled={!isEditMode}
                         />
                         <Input
                             type="text"
                             placeholder="Last Name"
-                            value={profile.lastName}
-                            onChange={e => setProfile(prev => ({...prev, lastName: e.target.value}))}
+                            value={profile.last_name || ''}
+                            onChange={e => setProfile(prev => ({...prev, last_name: e.target.value}))}
                             disabled={!isEditMode}
                         />
                         <Input
                             type="date"
-                            value={profile.birthDate}
-                            onChange={e => setProfile(prev => ({...prev, birthDate: e.target.value}))}
+                            value={profile.birth_date || ''}
+                            onChange={e => setProfile(prev => ({...prev, birth_date: e.target.value}))}
                             disabled={!isEditMode}
                         />
                         <Select
-                            value={profile.gender}
+                            value={profile.gender || ''}
                             onChange={e => setProfile(prev => ({...prev, gender: e.target.value}))}
                             disabled={!isEditMode}
                         >
@@ -186,7 +220,7 @@ const Profile = () => {
                     <SectionTitle>About You</SectionTitle>
                     <TextArea
                         placeholder="Tell us about yourself..."
-                        value={profile.bio}
+                        value={profile.bio || ''}
                         onChange={e => setProfile(prev => ({...prev, bio: e.target.value}))}
                         disabled={!isEditMode}
                     />
@@ -198,7 +232,7 @@ const Profile = () => {
                         <Input
                             type="text"
                             placeholder="Enter your location"
-                            value={profile.location}
+                            value={profile.location || ''}
                             onChange={e => setProfile(prev => ({...prev, location: e.target.value}))}
                             disabled={!isEditMode}
                             style={{gridColumn: '1 / -1'}}
