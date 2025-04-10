@@ -5,6 +5,7 @@ import Register from "./AuthScreen/Register";
 import ProfileForm from "./AuthScreen/ProfileForm";
 import AuthCheck from "./AuthScreen/AuthCheck";
 import Profile from "./ProfileScreen/Profile";
+import SpotifyCallback from "./SpotifyCallback";
 
 export const router = createBrowserRouter([
     {
@@ -33,5 +34,9 @@ export const router = createBrowserRouter([
     {
         path: "/profile/edit",
         element: <Profile/>
+    },
+    {
+        path: "/spotify/callback",
+        element: <SpotifyCallback/>
     }
 ])
