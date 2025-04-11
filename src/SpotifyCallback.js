@@ -32,11 +32,7 @@ const SpotifyCallback = () => {
             });
 
             if (response.ok) {
-                const data = await response.json();
-                // Store the access token and refresh token securely
-                localStorage.setItem('spotify_access_token', data.access_token);
-                localStorage.setItem('spotify_refresh_token', data.refresh_token);
-                // Redirect to a protected page or your main app
+                // const data = await response.json();
                 navigate('/profile');
             } else {
                 console.error('Failed to exchange code for token:', response.status, response.statusText);

@@ -187,3 +187,28 @@ export const LogoutButton = styled(ActionButton)`
         background-color: #dc2626;
     }
 `;
+
+export const GenreContainer = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+`;
+
+export const GenreTag = styled.div`
+    display: inline-flex;
+    align-items: center;
+    background: linear-gradient(135deg, #3b82f6, #6366f1);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 2rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    transition: all 0.2s;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    }
+`;

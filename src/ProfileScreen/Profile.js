@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import {User, MapPin, Camera} from 'lucide-react';
+import {User, MapPin, Camera, Music} from 'lucide-react';
 import {useLocation, useNavigate} from "react-router-dom";
 import {
     Container,
@@ -17,7 +17,9 @@ import {
     ActionButton,
     ButtonContainer,
     EditButton,
-    LogoutButton, MainContent
+    LogoutButton, MainContent,
+    GenreTag,
+    GenreContainer
 } from './ProfileLayout';
 import Header from "../MainScreen/Header";
 
@@ -57,7 +59,8 @@ const initialProfileState = {
     gender: '',
     bio: '',
     location: '',
-    profile_picture_url: null
+    profile_picture_url: null,
+    genres: []
 };
 
 const Profile = () => {
@@ -83,10 +86,12 @@ const Profile = () => {
         try {
             setError(null);
             const data = await profileService.fetchProfile(token);
+            console.log(data);
             setProfile(data);
             if (data.profile_picture_url) {
                 setImagePreview(data.profile_picture_url);
             }
+
         } catch (error) {
             setError('Failed to load profile data');
             console.error('Error fetching profile:', error);
@@ -164,6 +169,8 @@ const Profile = () => {
     if (loading) {
         return <Container>Loading...</Container>;
     }
+
+    const hasGenres = Array.isArray(profile.genres) && profile.genres.length > 0;
 
     return (
         <Container>
@@ -276,6 +283,23 @@ const Profile = () => {
                             />
                         </Grid>
                     </Section>
+
+                    {hasGenres && (
+                        <Section>
+                            <SectionTitle>
+                                <Music size={16} className="inline mr-2"/>
+                                Favorite Music Genres
+                            </SectionTitle>
+
+                            <GenreContainer>
+                                {profile.genres.map((genre) => (
+                                    <GenreTag key={genre}>
+                                        {genre}
+                                    </GenreTag>
+                                ))}
+                            </GenreContainer>
+                        </Section>
+                    )}
 
                     {isEditMode && (
                         <ActionButton

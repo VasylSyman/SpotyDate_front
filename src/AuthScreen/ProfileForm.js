@@ -1,22 +1,22 @@
-import React, { useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React, {useState} from 'react';
+import {useLocation, useNavigate} from 'react-router-dom';
 import {AuthTitle, AuthCard, Form, Input, Button, AuthContainer} from './AuthLayout';
 import styled from 'styled-components';
 
-const DateInput = styled(Input).attrs({ type: 'date' })`
-  color-scheme: dark;
+const DateInput = styled(Input).attrs({type: 'date'})`
+    color-scheme: dark;
 `;
 
 const ErrorText = styled.p`
-  color: #ef4444;
-  font-size: 0.875rem;
-  margin-top: -0.5rem;
+    color: #ef4444;
+    font-size: 0.875rem;
+    margin-top: -0.5rem;
 `;
 
 const ProfileForm = () => {
     const navigate = useNavigate();
     const location = useLocation();
-    const { email, password } = location.state || {};
+    const {email, password} = location.state || {};
 
     const [formData, setFormData] = useState({
         name: '',
@@ -27,7 +27,7 @@ const ProfileForm = () => {
     const [error, setError] = useState('');
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setFormData(prev => ({
             ...prev,
             [name]: value
@@ -42,7 +42,7 @@ const ProfileForm = () => {
         try {
             const response = await fetch('http://0.0.0.0:8000/register', {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
                     email,
                     password,
@@ -60,7 +60,18 @@ const ProfileForm = () => {
 
             localStorage.setItem("access_token", data.access_token);
 
-            navigate('/');
+            const response_spotify = await fetch('http://0.0.0.0:8000/auth/spotify', {
+                headers: {
+                    'Authorization': `Bearer ${data.access_token}`
+                }
+            });
+
+            if (response_spotify.ok) {
+                const data = await response_spotify.json();
+                window.location.href = data.url;
+            } else {
+                console.error('Failed to initiate Spotify auth:', response_spotify.status, response_spotify.statusText);
+            }
         } catch (error) {
             console.error('Profile completion error:', error);
             setError(error.message);
