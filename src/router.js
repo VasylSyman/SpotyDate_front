@@ -6,6 +6,7 @@ import ProfileForm from "./AuthScreen/ProfileForm";
 import AuthCheck from "./AuthScreen/AuthCheck";
 import Profile from "./ProfileScreen/Profile";
 import SpotifyCallback from "./SpotifyCallback";
+import ChatScreen from "./ChatScreen/ChatScreen";
 
 export const router = createBrowserRouter([
     {
@@ -38,5 +39,13 @@ export const router = createBrowserRouter([
     {
         path: "/spotify/callback",
         element: <SpotifyCallback/>
-    }
+    },
+    {
+        path: "/chat",
+        element: <ChatScreen/>
+    },
+    {
+        path: "/chat/:conversationId",
+        element: <ChatScreen/>,
+    },
 ])

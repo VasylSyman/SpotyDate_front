@@ -153,10 +153,7 @@ const Header = () => {
                     </>
                 )}
             </SpotifyButton>
-            <IconWrapper onClick={() => console.log('Bell clicked')}>
-                <Bell size={20}/>
-            </IconWrapper>
-            <IconWrapper onClick={() => console.log('Messages clicked')}>
+            <IconWrapper onClick={() => navigate('/chat')}>
                 <MessageSquare size={20}/>
             </IconWrapper>
             <IconWrapper onClick={() => navigate('/profile')}>
