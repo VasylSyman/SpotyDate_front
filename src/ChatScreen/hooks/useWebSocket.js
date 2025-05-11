@@ -12,7 +12,7 @@ const useWebSocket = (token, activeConversationRef, setMessages, setConversation
 
         const connectWebSocket = () => {
             console.log('Attempting to connect WebSocket...');
-            const ws_old = new WebSocket(`ws://${WS_URL}/ws/${token}`);
+            //const ws_old = new WebSocket(`ws://${WS_URL}/ws/${token}`);
             const ws = new WebSocket(`${window.location.protocol === 'https:' ? 'wss' : 'ws'}://${WS_URL}/ws/${token}`);
 
 
