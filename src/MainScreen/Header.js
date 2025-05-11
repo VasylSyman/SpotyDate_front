@@ -42,8 +42,8 @@ const IconWrapper = styled.div`
     transition: transform 0.2s ease;
 
     &:hover {
-        transform: scale(1.1); /* Scale up the icon on hover */
-        color: #10b981; /* Change color on hover */
+        transform: scale(1.1);
+        color: #10b981;
     }
 `;
 
