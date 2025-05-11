@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
-import { AuthContainer, AuthCard, AuthTitle, Form, Input, Button, SwitchText } from './AuthLayout';
+import React, {useState} from 'react';
+import {AuthContainer, AuthCard, AuthTitle, Form, Input, Button, SwitchText} from './AuthLayout';
 import {Link, useNavigate} from 'react-router-dom';
+import {BASE_URL} from "../config";
 
-const Login = ({ onSwitchToRegister }) => {
+const Login = ({onSwitchToRegister}) => {
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: '',
@@ -11,7 +12,7 @@ const Login = ({ onSwitchToRegister }) => {
     const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setFormData(prev => ({
             ...prev,
             [name]: value
@@ -23,7 +24,7 @@ const Login = ({ onSwitchToRegister }) => {
         setLoading(true);
 
         try {
-            const response = await fetch("http://0.0.0.0:8000/login", {
+            const response = await fetch(`${BASE_URL}/login`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",

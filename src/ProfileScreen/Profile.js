@@ -22,10 +22,11 @@ import {
     GenreContainer
 } from './ProfileLayout';
 import Header from "../MainScreen/Header";
+import {BASE_URL} from "../config";
 
 const profileService = {
     fetchProfile: async (token) => {
-        const response = await fetch('http://0.0.0.0:8000/user/me', {
+        const response = await fetch(`${BASE_URL}/user/me`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
@@ -37,7 +38,7 @@ const profileService = {
     },
 
     updateProfile: async (token, formData) => {
-        const response = await fetch('http://0.0.0.0:8000/update_user/me', {
+        const response = await fetch(`${BASE_URL}/update_user/me`, {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${token}`

@@ -1,4 +1,5 @@
 import {useState, useEffect, useRef, useCallback} from 'react';
+import {WS_URL} from "../../config";
 
 const useWebSocket = (token, activeConversationRef, setMessages, setConversations, fetchMessages) => {
     const [socket, setSocket] = useState(null);
@@ -11,7 +12,7 @@ const useWebSocket = (token, activeConversationRef, setMessages, setConversation
 
         const connectWebSocket = () => {
             console.log('Attempting to connect WebSocket...');
-            const ws = new WebSocket(`ws://0.0.0.0:8000/ws/${token}`);
+            const ws = new WebSocket(`ws://${WS_URL}/ws/${token}`);
 
             ws.onopen = () => {
                 console.log('WebSocket connection established');

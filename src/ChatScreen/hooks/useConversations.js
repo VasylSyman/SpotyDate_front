@@ -1,4 +1,5 @@
 import {useState, useEffect} from 'react';
+import {BASE_URL} from "../../config";
 
 const useConversations = (token, activeConversationIdFromParam, setActiveConversation, setShowMobileList) => {
     const [conversations, setConversations] = useState([]);
@@ -13,7 +14,7 @@ const useConversations = (token, activeConversationIdFromParam, setActiveConvers
 
             try {
                 setIsLoadingConversations(true);
-                const response = await fetch('http://0.0.0.0:8000/chat/conversations', {
+                const response = await fetch(`${BASE_URL}/chat/conversations`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,

@@ -1,4 +1,5 @@
 import {useState, useEffect, useRef} from 'react';
+import {BASE_URL} from "../../config";
 
 const useMessages = (token, activeConversation, activeConversationRef) => {
     const [messages, setMessages] = useState([]);
@@ -15,7 +16,7 @@ const useMessages = (token, activeConversation, activeConversationRef) => {
         setMessages([]);
 
         try {
-            const response = await fetch(`http://0.0.0.0:8000/chat/matches/${conversationId}/messages`, {
+            const response = await fetch(`${BASE_URL}/chat/matches/${conversationId}/messages`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`,

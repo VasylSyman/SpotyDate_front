@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import {useLocation, useNavigate} from 'react-router-dom';
 import {AuthTitle, AuthCard, Form, Input, Button, AuthContainer} from './AuthLayout';
 import styled from 'styled-components';
+import {BASE_URL} from "../config";
 
 const DateInput = styled(Input).attrs({type: 'date'})`
     color-scheme: dark;
@@ -40,7 +41,7 @@ const ProfileForm = () => {
         setLoading(true);
 
         try {
-            const response = await fetch('http://0.0.0.0:8000/register', {
+            const response = await fetch(`${BASE_URL}/register`, {
                 method: 'POST',
                 headers: {'Content-Type': 'application/json'},
                 body: JSON.stringify({
@@ -60,7 +61,7 @@ const ProfileForm = () => {
 
             localStorage.setItem("access_token", data.access_token);
 
-            const response_spotify = await fetch('http://0.0.0.0:8000/auth/spotify', {
+            const response_spotify = await fetch(`${BASE_URL}/auth/spotify`, {
                 headers: {
                     'Authorization': `Bearer ${data.access_token}`
                 }

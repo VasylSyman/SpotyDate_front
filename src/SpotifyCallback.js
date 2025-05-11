@@ -1,5 +1,6 @@
 import React, {useEffect} from 'react';
-import {useNavigate} from 'react-router-dom'; // If you're using React Router
+import {useNavigate} from 'react-router-dom';
+import {BASE_URL} from "./config"; // If you're using React Router
 
 const SpotifyCallback = () => {
     const navigate = useNavigate();
@@ -22,7 +23,7 @@ const SpotifyCallback = () => {
     const exchangeCodeForToken = async (code) => {
         const token = localStorage.getItem('access_token');
         try {
-            const response = await fetch('http://0.0.0.0:8000/callback', {
+            const response = await fetch(`${BASE_URL}/callback`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
-import { AuthContainer, AuthCard, AuthTitle, Form, Input, Button, SwitchText } from './AuthLayout';
-import { Link } from 'react-router-dom';
+import React, {useState} from 'react';
+import {AuthContainer, AuthCard, AuthTitle, Form, Input, Button, SwitchText} from './AuthLayout';
+import {Link} from 'react-router-dom';
 import {useNavigate} from 'react-router-dom';
+import {BASE_URL} from "../config";
 
-const Register = ({ onSwitchToLogin }) => {
+const Register = ({onSwitchToLogin}) => {
     const navigate = useNavigate();
 
     const [formData, setFormData] = useState({
@@ -15,7 +16,7 @@ const Register = ({ onSwitchToLogin }) => {
     const [error, setError] = useState('');
 
     const handleChange = (e) => {
-        const { name, value } = e.target;
+        const {name, value} = e.target;
         setFormData(prev => ({
             ...prev,
             [name]: value
@@ -37,10 +38,10 @@ const Register = ({ onSwitchToLogin }) => {
 
     const checkEmailUnique = async (email) => {
         try {
-            const response = await fetch('http://0.0.0.0:8000/unique_email', {
+            const response = await fetch(`${BASE_URL}/unique_email`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email }),
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email}),
             });
             const data = await response.json();
             return data;
@@ -64,7 +65,7 @@ const Register = ({ onSwitchToLogin }) => {
                 return;
             }
 
-            navigate('/register/profile', { state: { email: formData.email, password: formData.password } });
+            navigate('/register/profile', {state: {email: formData.email, password: formData.password}});
         } catch (error) {
             console.error('Registration error:', error);
             setError('An error occurred. Please try again.');
@@ -103,7 +104,7 @@ const Register = ({ onSwitchToLogin }) => {
                         required
                     />
                     {error && (
-                        <p style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '-0.5rem' }}>
+                        <p style={{color: '#ef4444', fontSize: '0.875rem', marginTop: '-0.5rem'}}>
                             {error}
                         </p>
                     )}

@@ -3,6 +3,7 @@ import {Container, MainContent, ContentWrapper} from './Layout';
 import Header from './Header';
 import MatchesSection from './MatchesSection';
 import {useState, useEffect} from "react";
+import {BASE_URL} from "../config";
 
 
 const MainScreen = () => {
@@ -16,7 +17,7 @@ const MainScreen = () => {
         const fetchMatches = async () => {
             try {
                 setLoading(true);
-                const response = await fetch('http://0.0.0.0:8000/matches', {
+                const response = await fetch(`${BASE_URL}/matches`, {
                     method: 'GET',
                     headers: {
                         'Authorization': `Bearer ${token}`,

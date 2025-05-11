@@ -1,5 +1,6 @@
-import { useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import {useEffect} from "react";
+import {useNavigate} from "react-router-dom";
+import {BASE_URL} from "../config";
 
 const AuthCheck = () => {
     const navigate = useNavigate();
@@ -13,7 +14,7 @@ const AuthCheck = () => {
             }
 
             try {
-                const response = await fetch("http://0.0.0.0:8000/verify_token", {
+                const response = await fetch(`${BASE_URL}/verify_token`, {
                     method: "GET",
                     headers: {
                         "Authorization": `Bearer ${token}`,

@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import styled from 'styled-components';
 import {Bell, MessageSquare, User, Loader} from 'lucide-react';
 import {useNavigate} from 'react-router-dom';
+import {BASE_URL} from "../config";
 
 const HeaderContainer = styled.header`
     display: flex;
@@ -105,7 +106,7 @@ const Header = () => {
     const initiateSpotifyAuth = async () => {
         try {
             setIsLoading(true);
-            const response = await fetch('http://0.0.0.0:8000/auth/spotify', {
+            const response = await fetch(`${BASE_URL}/auth/spotify`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
